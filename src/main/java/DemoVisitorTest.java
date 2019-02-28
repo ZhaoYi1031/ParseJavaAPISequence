@@ -15,7 +15,7 @@ public class DemoVisitorTest {
         return false;
     }
     public void insertErrorStatus(Con con, String path, int projectId, int disk, int status) throws SQLException {
-        con.preSt = con.con.prepareStatement("insert into API_sequence(projectId, path, disk, status) values(?,?,?,?)");
+        con.preSt = con.con.prepareStatement("insert into API_sequence_new(projectId, path, disk, status) values(?,?,?,?)");
         con.preSt.setInt(1, projectId);
         con.preSt.setString(2, path);
         con.preSt.setInt(3,disk);
@@ -36,9 +36,15 @@ public class DemoVisitorTest {
         }
 //        DemoVisitor visitor = new DemoVisitor();
 //        MyVisitor visitor = new MyVisitor();
+        final CompilationUnit finalComp = comp;
         comp.accept(new ASTVisitor() {
             @Override
             public boolean visit(MethodDeclaration node) {
+
+
+
+
+
                 Block block = node.getBody();
                 final List ret = new ArrayList();
                 final List retFull = new ArrayList();
@@ -132,8 +138,9 @@ public class DemoVisitorTest {
 //                    System.out.println(sqlOrder);
 
                     try {
-                        con.preSt = con.con.prepareStatement("insert into API_sequence(projectId, method, path, disk, doc, sentence, apis, jdkapis, status) "
-                            + "values(?,?,?,?,?,?,?,?,?)");
+                        con.preSt = con.con.prepareStatement("insert into API_sequence_new(projectId, method, path, disk, " +
+                                "doc, sentence, apis, jdkapis, status, code_new, url_new) "
+                            + "values(?,?,?,?,?,?,?,?,?,?,?)");
                         con.preSt.setInt(1, projectId);
                         con.preSt.setString(2, ret.get(0).toString());
                         con.preSt.setString(3,path);
@@ -143,8 +150,43 @@ public class DemoVisitorTest {
                         con.preSt.setString(7,  retFull.get(1).toString());
                         con.preSt.setString(8, (String) ret.get(2).toString());
                         con.preSt.setInt(9,1);
+                        con.preSt.setString(10, node.toString());
+
+                        String urlPath = "";
 
 
+//                        System.out.println(path);
+//                        path = "/sdpdata2/zhaoyi/downloads/150/gglinux___xingwen___34883091/src/StaffIndex.java";
+
+                        String[] pathStrs = path.split("/");
+                        if (pathStrs.length > 6) {
+//                            System.out.println("-"+pathStrs[1]); //sdpdata1
+                            StringBuilder url = new StringBuilder("https://github.com/");
+                            String strUserProject = pathStrs[5];
+                            String[] strUserProjectStrs = strUserProject.split("___");
+                            if (strUserProjectStrs.length == 3) {
+//                                System.out.println("length" + strUserProjectStrs.length);
+                                String userName = strUserProjectStrs[0];
+                                String projectName = strUserProjectStrs[1];
+                                // https://github.com/cbg-ethz/rnaiutilities/blob/master/rnaiutilities/utility/files.py#L108
+                                url.append(userName+"/");
+                                url.append(projectName+"/");
+                                url.append("blob/master");
+                                for (int i = 6; i < pathStrs.length; ++i) {
+                                    url.append("/" + pathStrs[i]);
+                                }
+
+                                int lineNumber = finalComp.getLineNumber(node.getStartPosition()) - 1;
+//                                System.out.println("lineNumer = " + lineNumber);
+
+                                url.append("#L"+lineNumber);
+
+                                urlPath = url.toString();
+//                                System.out.println(urlPath);
+                            }
+                        }
+
+                        con.preSt.setString(11, urlPath);
 //                        System.out.println("hashcode: " + Integer.toString(con.hashCode()));
                         con.executeSql();
                     } catch (SQLException e) {
@@ -154,7 +196,7 @@ public class DemoVisitorTest {
 //                        String errorSqlError = "insert into API_sequence(projectId, path, disk, status) values(" +
 //                                Integer.toString(projectId) + ", '" + path + "', " + Integer.toString(disk) + ", 0);";
                         try {
-                            con.preSt = con.con.prepareStatement("insert into API_sequence(projectId, method, path, disk, status) "
+                            con.preSt = con.con.prepareStatement("insert into API_sequence_new(projectId, method, path, disk, status) "
                             + "values(?,?,?,?,?)");
                             con.preSt.setInt(1,projectId);
                             con.preSt.setString(2,ret.get(0).toString());
@@ -174,10 +216,9 @@ public class DemoVisitorTest {
         );
     }
 
-    public static void main(String args[]) {
-
-//        DemoVisitorTest test = new DemoVisitorTest
-//                ("/home/luckcul/developSpace/test/CharacterDecoder.java", 10001, 1);
+    public static void main(String args[]) throws SQLException, ClassNotFoundException {
+        DemoVisitorTest test = new DemoVisitorTest
+                ("/home/zy/zy/150/gglinux___xingwen___34883091/src/StaffIndex.java", 10001, 1, new Con());
 //        SubRegistry x = new SubRegistry();
     }
 }  

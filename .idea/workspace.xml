@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="e43dbc20-7541-46ef-9019-b933c10748e5" name="Default Changelist" comment="" />
+    <list default="true" id="e43dbc20-7541-46ef-9019-b933c10748e5" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/src/main/java/DemoVisitorTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/DemoVisitorTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/SubThread.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/SubThread.java" afterDir="false" />
+    </list>
     <ignored path="$PROJECT_DIR$/target/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -32,11 +35,11 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/DemoVisitorTest.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="95">
-              <caret line="9" lean-forward="true" selection-start-line="9" selection-end-line="9" />
+            <state relative-caret-position="-2683">
+              <caret line="20" column="25" lean-forward="true" selection-start-line="20" selection-start-column="25" selection-end-line="20" selection-end-column="25" />
               <folding>
-                <element signature="e#6267#15377#0" expanded="true" />
-                <element signature="e#15376#15377#0" expanded="true" />
+                <element signature="e#6267#15616#0" expanded="true" />
+                <element signature="e#15615#15616#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -202,7 +205,7 @@
       <window_info id="Designer" />
       <window_info id="UI Designer" />
       <window_info id="Favorites" side_tool="true" />
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.24957459" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.24957459" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info anchor="bottom" id="Version Control" />
       <window_info anchor="bottom" id="Terminal" />
@@ -210,7 +213,7 @@
       <window_info anchor="bottom" id="Messages" weight="0.3297414" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" visible="true" weight="0.3297414" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.3297414" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -254,11 +257,11 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/DemoVisitorTest.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="95">
-          <caret line="9" lean-forward="true" selection-start-line="9" selection-end-line="9" />
+        <state relative-caret-position="-2683">
+          <caret line="20" column="25" lean-forward="true" selection-start-line="20" selection-start-column="25" selection-end-line="20" selection-end-column="25" />
           <folding>
-            <element signature="e#6267#15377#0" expanded="true" />
-            <element signature="e#15376#15377#0" expanded="true" />
+            <element signature="e#6267#15616#0" expanded="true" />
+            <element signature="e#15615#15616#0" expanded="true" />
           </folding>
         </state>
       </provider>
