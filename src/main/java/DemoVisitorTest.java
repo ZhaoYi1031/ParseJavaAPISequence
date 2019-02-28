@@ -176,7 +176,7 @@ public class DemoVisitorTest {
                                     url.append("/" + pathStrs[i]);
                                 }
 
-                                int lineNumber = finalComp.getLineNumber(node.getStartPosition()) - 1;
+                                int lineNumber = finalComp.getLineNumber(node.getStartPosition());
 //                                System.out.println("lineNumer = " + lineNumber);
 
                                 url.append("#L"+lineNumber);
