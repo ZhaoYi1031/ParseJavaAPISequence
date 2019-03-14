@@ -21,7 +21,7 @@ class FindFileVisitor extends SimpleFileVisitor<Path> {
         this.fileSuffix = fileSuffix;
     }
     public void insertErrorStatus(String path, int projectId, int status) throws SQLException {
-        this.con.preSt = this.con.con.prepareStatement("insert into API_sequence_new(projectId, path, disk, status) values(?,?,?,?)");
+        this.con.preSt = this.con.con.prepareStatement("insert into Code_Element(projectId, path, disk, status) values(?,?,?,?)");
         this.con.preSt.setInt(1, projectId);
         this.con.preSt.setString(2, path);
         this.con.preSt.setInt(3,disk);
@@ -86,7 +86,7 @@ class FindFileVisitor extends SimpleFileVisitor<Path> {
                             }
                         }
                         // delete the parsed records with projectId == new project id
-                        String deleteSql = "delete from API_sequence_new where projectId = " + Integer.toString(projectId);
+                        String deleteSql = "delete from Code_Element where projectId = " + Integer.toString(projectId);
                         try {
                             con.executeSql(deleteSql);
                         } catch (SQLException e) {

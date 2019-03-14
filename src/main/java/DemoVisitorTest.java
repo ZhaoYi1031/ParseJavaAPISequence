@@ -23,6 +23,180 @@ public class DemoVisitorTest {
         con.executeSql();
     }
 
+    public static String parseMethod(String method) {
+        final List<String> ret = new ArrayList();
+        int last_id = 0;
+        for (int id = 0; id < method.length(); ++id) {
+            char c = method.charAt(id);
+            if (c >= 'A' && c <= 'Z') {
+//                if (_ > 0)
+                {
+                    ret.add(method.substring(last_id, id).toLowerCase());
+                    last_id = id;
+                }
+            }
+        }
+        ret.add(method.substring(last_id, method.length()).toLowerCase());
+        String ans = "";
+        for (String i: ret) {
+            if (ans.equals("")) {
+                ans = i;
+            } else {
+                ans = ans + " " + i;
+            }
+        }
+        System.out.println("method ans=" + ans);
+        return ans;
+    }
+
+    public static String parseComment(String code) {
+//        System.out.println(code);
+        int pos = -1;
+        for (int i = 0; i < code.length() -1; ++i) {
+            if (code.charAt(i) == '*' && code.charAt(i+1) == '/') {
+                pos = i + 3; // +2 空格 +3: \n
+                break;
+            }
+        }
+        if (pos != -1)
+            return code.substring(0, pos);
+        return code;
+    }
+
+    public static String processSentence(String sen) {
+//        System.out.println(sen.substring(0,2));
+        if (sen.length() >= 2 && sen.substring(0,2).equals("* "))
+            return sen.substring(2, sen.length());
+        return sen;
+    }
+
+    public static String parseCode(String code) {
+//        System.out.println(code);
+        int pos = -1;
+        for (int i = 0; i < code.length() -1; ++i) {
+            if (code.charAt(i) == '*' && code.charAt(i+1) == '/') {
+                pos = i + 3;
+                break;
+            }
+        }
+        if (pos != -1)
+            return code.substring(pos, code.length());
+        return code;
+    }
+
+    public static String getSuffixStringSingle(String api) {
+        if (api.replaceAll("\\s+", "").equals(""))
+            return "";
+        //param:  java.util.Hashtable<java.lang.String,java.lang.Float>
+        //return: Map < String , Font > values Font dispose Map < String , Font > clear Map < Font , Font > values Font dispose Map < Font , Font > clear
+        int pos = api.lastIndexOf(".");
+        if (pos != -1)
+            return api.substring(pos + 1, api.length());
+        return api;
+    }
+
+    public static String getSuffixString(String api) {
+
+//        final List<String> ret = new ArrayList();
+//
+//        //param:  java.util.Hashtable<java.lang.String,java.lang.Float>
+//        //return: Map < String , Font > values Font dispose Map < String , Font > clear Map < Font , Font > values Font dispose Map < Font , Font > clear
+//        String[] apis = api.split("(<|>|\\s+)");
+//        for (String i : apis){
+////        for (int i = 0; i < apis.length(); ++i){
+//            ret.add(getSuffixStringSingle(i));
+//        }
+//        String ans = "";
+//        for (String i : ret){
+//            ans = ans + " " + i;
+//        }
+//        System.out.println("!!!api="+api);
+//        System.out.println("ans ="+ans);
+//        return api;
+        final List<String> ret = new ArrayList();
+        api = api.replaceAll("\\s+", " ");
+        int last_id = 0;
+        api = api + " ";
+        for (int _ = 0; _ < api.length(); ++_){
+            boolean flag = false;
+            char c = api.charAt(_);
+            if (c == ',') {
+                String tmp = api.substring(last_id, _);
+                ret.add(getSuffixStringSingle(tmp));
+                ret.add(",");
+                flag = true;
+            } else if (c == '<') {
+                String tmp = api.substring(last_id, _);
+                ret.add(getSuffixStringSingle(tmp));
+                ret.add("<");
+                flag = true;
+            } else if (c == '>') {
+                String tmp = api.substring(last_id, _);
+                ret.add(getSuffixStringSingle(tmp));
+                ret.add(">");
+                flag = true;
+            } else if (c == ' ') {
+                String tmp = api.substring(last_id, _);
+                ret.add(getSuffixStringSingle(tmp));
+                flag = true;
+            }
+            if (flag) {
+                last_id = _ + 1;
+            }
+        }
+        String ans = "";
+        for (String i : ret){
+            if (!i.equals("")) {
+                if (!ans.equals(""))
+                    ans = ans + " " + i;
+                else
+                    ans = i;
+            }
+        }
+//        System.out.println("!!!api="+api);
+//        System.out.println("ans ="+ans);
+//        ans = api;
+        return ans;
+    }
+
+    public static String getUrl(String path, CompilationUnit comp, int position) {
+        String urlPath = "";
+
+//                        System.out.println(path);
+//                        path = "/sdpdata2/zhaoyi/downloads/150/gglinux___xingwen___34883091/src/StaffIndex.java";
+
+        String[] pathStrs = path.split("/");
+        if (pathStrs.length > 6) {
+//                            System.out.println("-"+pathStrs[1]); //sdpdata1
+            StringBuilder url = new StringBuilder("https://github.com/");
+            String strUserProject = pathStrs[5];
+            String[] strUserProjectStrs = strUserProject.split("___");
+            if (strUserProjectStrs.length == 3) {
+//                                System.out.println("length" + strUserProjectStrs.length);
+                String userName = strUserProjectStrs[0];
+                String projectName = strUserProjectStrs[1];
+                // https://github.com/cbg-ethz/rnaiutilities/blob/master/rnaiutilities/utility/files.py#L108
+                url.append(userName+"/");
+                url.append(projectName+"/");
+                url.append("blob/master");
+                for (int i = 6; i < pathStrs.length; ++i) {
+                    url.append("/" + pathStrs[i]);
+                }
+
+                int lineNumber = comp.getLineNumber(position);
+//                                System.out.println("lineNumer = " + lineNumber);
+
+                url.append("#L"+lineNumber);
+
+                urlPath = url.toString();
+                return urlPath;
+//                                System.out.println(urlPath);
+            }
+
+        }
+        return "";
+    }
+
     public DemoVisitorTest(final String path, final int projectId, final int disk, final Con con) throws SQLException {
         CompilationUnit comp = null;
         try {
@@ -40,10 +214,6 @@ public class DemoVisitorTest {
         comp.accept(new ASTVisitor() {
             @Override
             public boolean visit(MethodDeclaration node) {
-
-
-
-
 
                 Block block = node.getBody();
                 final List ret = new ArrayList();
@@ -92,12 +262,16 @@ public class DemoVisitorTest {
                                     String qualifiedName = typeBinding.getQualifiedName();
 //                                    retFull.add(qualifiedName + " " + node.getName());
                                     String qualifiedFullName = qualifiedName + " " + node.getName();
-                                    if(retFull.size() <= 1) retFull.add(qualifiedFullName);
-                                    else retFull.set(1, retFull.get(1) + "|" + qualifiedFullName);
+
+
+//                                    System.out.println("qualifiedFullName=" + qualifiedFullName);
+                                    getSuffixString(qualifiedFullName);
+                                    if(retFull.size() <= 1) retFull.add(getSuffixString(qualifiedFullName));
+                                    else retFull.set(1, retFull.get(1) + " " + getSuffixString(qualifiedFullName));
                                     if(isJdkApi(qualifiedName)) {
 //                                        ret.add(qualifiedName + " " + node.getName());
-                                        if(ret.size() <= 2)ret.add(qualifiedFullName);
-                                        else ret.set(2, ret.get(2) + "|" + qualifiedFullName);
+                                        if(ret.size() <= 2)ret.add(getSuffixString(qualifiedFullName));
+                                        else ret.set(2, ret.get(2) + " " + getSuffixString(qualifiedFullName));
                                     }
                                 }
                             }
@@ -108,14 +282,17 @@ public class DemoVisitorTest {
                             ITypeBinding binding = node.getType().resolveBinding();
                             if(binding == null) return ;
                             String qualifiedName = binding.getQualifiedName();
+
+//                            System.out.println("New qualifiedFullName=" + qualifiedName);
+                            getSuffixString(qualifiedName);
                             String qualifiedFullName = qualifiedName + " new";
 //                            retFull.add(qualifiedName + " " + "new");
-                            if(retFull.size() <= 1) retFull.add(qualifiedFullName);
-                            else retFull.set(1, retFull.get(1) + "|" + qualifiedFullName);
+                            if(retFull.size() <= 1) retFull.add(getSuffixString(qualifiedFullName));
+                            else retFull.set(1, retFull.get(1) + " " + getSuffixString(qualifiedFullName));
                             if(isJdkApi(qualifiedName)) {
 //                                ret.add(qualifiedName + " " + "new");
-                                if(ret.size() <= 2) ret.add(qualifiedFullName);
-                                else ret.set(2, ret.get(2) + "|" + qualifiedFullName);
+                                if(ret.size() <= 2) ret.add(getSuffixString(qualifiedFullName));
+                                else ret.set(2, ret.get(2) + " " + getSuffixString(qualifiedFullName));
                             }
 
                         }
@@ -137,58 +314,92 @@ public class DemoVisitorTest {
 
 //                    System.out.println(sqlOrder);
 
+                    if (ret.get(1).toString().equals("") || retFull.get(0).toString().equals("") ||
+                            node.toString().equals("")) {
+                        System.out.println("get Null "+ projectId);
+                    }else {
+
+
                     try {
-                        con.preSt = con.con.prepareStatement("insert into API_sequence_new(projectId, method, path, disk, " +
-                                "doc, sentence, apis, jdkapis, status, code_new, url_new) "
-                            + "values(?,?,?,?,?,?,?,?,?,?,?)");
+
+                        con.preSt = con.con.prepareStatement("insert into Code_Element(projectId, method, path, disk, " +
+                                "doc, sentence, apis, jdkapis, status, code, url," +
+                                "comment, apisSeq, jdkapisSeq, methodSeq) "
+                            + "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+
+//                        1:        projectId
+//                        2:        method
+//                        3:        path
+//                        4:        disk
+//                        5:        doc
+//                        6:        sentence
+//                        7:        apis
+//                        8:        jdkapis
+//                        9:        status
+//                       10:        code_new
+//                       11:        url_new
+
+//                       12:        comment
+//                       13:        apisSeq
+//                       14:        jdksapiSeq
+//                       15:        methodSeq
+
+
+
                         con.preSt.setInt(1, projectId);
-                        con.preSt.setString(2, ret.get(0).toString());
+                        String method = ret.get(0).toString();
+                        con.preSt.setString(2, method);
                         con.preSt.setString(3,path);
                         con.preSt.setInt(4, disk);
-                        con.preSt.setString(5, retFull.get(0).toString());
-                        con.preSt.setString(6,  ret.get(1).toString());
-                        con.preSt.setString(7,  retFull.get(1).toString());
-                        con.preSt.setString(8, (String) ret.get(2).toString());
+                        con.preSt.setString(5, processSentence(retFull.get(0).toString()));
+                        con.preSt.setString(6,  processSentence(ret.get(1).toString()));
+                        String apis = retFull.get(1).toString();
+                        con.preSt.setString(7, apis);
+                        String jdkapis = (String) ret.get(2).toString();
+                        con.preSt.setString(8, jdkapis);
                         con.preSt.setInt(9,1);
-                        con.preSt.setString(10, node.toString());
+                        String code = node.toString();
+                        con.preSt.setString(10, parseCode(code));
 
-                        String urlPath = "";
-
-
-//                        System.out.println(path);
-//                        path = "/sdpdata2/zhaoyi/downloads/150/gglinux___xingwen___34883091/src/StaffIndex.java";
-
-                        String[] pathStrs = path.split("/");
-                        if (pathStrs.length > 6) {
-//                            System.out.println("-"+pathStrs[1]); //sdpdata1
-                            StringBuilder url = new StringBuilder("https://github.com/");
-                            String strUserProject = pathStrs[5];
-                            String[] strUserProjectStrs = strUserProject.split("___");
-                            if (strUserProjectStrs.length == 3) {
-//                                System.out.println("length" + strUserProjectStrs.length);
-                                String userName = strUserProjectStrs[0];
-                                String projectName = strUserProjectStrs[1];
-                                // https://github.com/cbg-ethz/rnaiutilities/blob/master/rnaiutilities/utility/files.py#L108
-                                url.append(userName+"/");
-                                url.append(projectName+"/");
-                                url.append("blob/master");
-                                for (int i = 6; i < pathStrs.length; ++i) {
-                                    url.append("/" + pathStrs[i]);
-                                }
-
-                                int lineNumber = finalComp.getLineNumber(node.getStartPosition());
-//                                System.out.println("lineNumer = " + lineNumber);
-
-                                url.append("#L"+lineNumber);
-
-                                urlPath = url.toString();
-//                                System.out.println(urlPath);
-                            }
-                        }
-
-                        con.preSt.setString(11, urlPath);
+                        String url = getUrl(path, finalComp, node.getStartPosition());
+                        System.out.println(url);
+                        con.preSt.setString(11, url);
 //                        System.out.println("hashcode: " + Integer.toString(con.hashCode()));
+
+                        con.preSt.setString(12, parseComment(code));
+                        con.preSt.setString(13, getSuffixString(apis));
+                        con.preSt.setString(14, getSuffixString(jdkapis));
+                        con.preSt.setString(15, parseMethod(method));
                         con.executeSql();
+
+
+
+//                        method = main
+//                        apis = java.util.Hashtable<java.lang.String,java.lang.Float> new
+//                                method = make
+//                        apis = java.lang.Long new  java.util.Hashtable get  st.ata.util.FPGenerator new  java.util.Hashtable put
+//                                method = extend
+//                        apis = java.lang.CharSequence length  java.lang.CharSequence charAt
+//                        method = extend8
+//                        apis = java.lang.String length  java.lang.String charAt
+//                        *************************************************************************
+//                        method = main
+//                        apis = Hashtable < String , Float > new
+//                                method = make
+//                        apis = Long new Hashtable get FPGenerator new Hashtable put
+//                                method = extend
+//                        apis = CharSequence length CharSequence charAt
+//                                method = extend8
+//                        apis = String length String charAt
+
+
+//                        System.out.println("method = " + ret.get(0).toString());
+//                        System.out.println(parseMethod(ret.get(0).toString()));
+//                        System.out.println("apis = " + retFull.get(1).toString());
+//                        apis = java.lang.Long new|java.util.Hashtable get|st.ata.util.FPGenerator new|java.util.Hashtable put
+//                                apis = java.lang.CharSequence length|java.lang.CharSequence charAt
+//                                apis = java.lang.String length|java.lang.String charAt
+//                        System.out.println("code_new = " + parseCode(node.toString()));
                     } catch (SQLException e) {
                         e.printStackTrace();
 //                        System.out.println("ERROR INSERT : " + sqlOrder);
@@ -196,7 +407,7 @@ public class DemoVisitorTest {
 //                        String errorSqlError = "insert into API_sequence(projectId, path, disk, status) values(" +
 //                                Integer.toString(projectId) + ", '" + path + "', " + Integer.toString(disk) + ", 0);";
                         try {
-                            con.preSt = con.con.prepareStatement("insert into API_sequence_new(projectId, method, path, disk, status) "
+                            con.preSt = con.con.prepareStatement("insert into Code_Element(projectId, method, path, disk, status) "
                             + "values(?,?,?,?,?)");
                             con.preSt.setInt(1,projectId);
                             con.preSt.setString(2,ret.get(0).toString());
@@ -209,7 +420,7 @@ public class DemoVisitorTest {
                             e1.printStackTrace();
                         }
                     }
-                }
+                }}
                 return true;
             }
         }
@@ -220,5 +431,8 @@ public class DemoVisitorTest {
         DemoVisitorTest test = new DemoVisitorTest
                 ("/home/zy/zy/150/gglinux___xingwen___34883091/src/StaffIndex.java", 10001, 1, new Con());
 //        SubRegistry x = new SubRegistry();
+//        System.out.println(getSuffixString("able"));
+//        System.out.println("sub:"+("abc".substring(0,0)));
+//        System.out.println(processSentence("* Input: An attack graph G with individual sc"));
     }
 }  
